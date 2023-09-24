@@ -28,7 +28,6 @@ export class ClusterMemoryStorePrimary {
 			const message_ = message as WorkerToPrimaryMessage
 			const { command, args, requestId, prefix } = message_
 			if (command === 'init' && !this.stores[prefix]) {
-				console.log('creating store', prefix)
 				this.stores[prefix] = new MemoryStore()
 			} // Todo: else validate that the windowMs is the same!
 
