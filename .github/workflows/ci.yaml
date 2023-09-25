@@ -68,7 +68,7 @@ jobs:
       - name: Build package to upload to GitHub releases
         run: |
           npm pack
-          mv cluster-memory-store-*.tgz cluster-memory-store.tgz
+          mv express-rate-limit-cluster-memory-store-*.tgz cluster-memory-store.tgz
       - name: Create a Github release
         uses: softprops/action-gh-release@v1
         with:
