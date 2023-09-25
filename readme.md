@@ -3,8 +3,8 @@
 <div align="center">
 
 [![tests](https://github.com/express-rate-limit/cluster-memory-store/actions/workflows/ci.yaml/badge.svg)](https://github.com/express-rate-limit/cluster-memory-store/actions/workflows/ci.yaml)
-[![npm version](https://img.shields.io/npm/v/cluster-memory-store.svg)](https://npmjs.org/package/cluster-memory-store 'View this project on NPM')
-[![npm downloads](https://img.shields.io/npm/dm/cluster-memory-store)](https://www.npmjs.com/package/cluster-memory-store)
+[![npm version](https://img.shields.io/npm/v/@express-rate-limit/cluster-memory-store.svg)](https://npmjs.org/package/@express-rate-limit/cluster-memory-store 'View this project on NPM')
+[![npm downloads](https://img.shields.io/npm/dm/@express-rate-limit/cluster-memory-store)](https://www.npmjs.com/package/@express-rate-limit/cluster-memory-store)
 
 A memory store for the
 [`express-rate-limit`](https://github.com/express-rate-limit/express-rate-limit)
@@ -15,26 +15,12 @@ middleware made for use with the
 
 ## Installation
 
-From the npm registry:
-
 ```sh
-# Using npm
-> npm install @express-rate-limit/cluster-memory-store
-# Using yarn or pnpm
-> yarn/pnpm add @express-rate-limit/cluster-memory-store
+npm install @express-rate-limit/cluster-memory-store
 ```
 
-From Github Releases:
-
-```sh
-# Using npm
-> npm install https://github.com/express-rate-limit/cluster-memory-store/releases/download/v{version}/cluster-memory-store.tgz
-# Using yarn or pnpm
-> yarn/pnpm add https://github.com/express-rate-limit/cluster-memory-store/releases/download/v{version}/cluster-memory-store.tgz
-```
-
-Replace `{version}` with the version of the package that you want to your, e.g.:
-`1.0.0`.
+([Alternate installation methods](https://github.com/express-rate-limit/cluster-memory-store/wiki/Installation-Methods) -
+pnpm, yarn, Github Releases, etc.)
 
 ## Usage
 
@@ -63,7 +49,8 @@ const limiter = rateLimit({
 app.use(limiter)
 ```
 
-See the `example/` folder for a complete, working example.
+See the `example/` folder for a
+[complete, working example](https://github.com/express-rate-limit/cluster-memory-store/tree/main/example).
 
 ## Configuration
 
