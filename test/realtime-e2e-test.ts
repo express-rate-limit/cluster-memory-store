@@ -5,6 +5,7 @@ import assert from 'node:assert/strict'
 import cluster from 'node:cluster'
 import process from 'node:process'
 import express from 'express'
+import fetch from 'node-fetch'
 import { rateLimit } from 'express-rate-limit'
 import {
 	ClusterMemoryStorePrimary,
