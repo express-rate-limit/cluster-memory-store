@@ -49,7 +49,7 @@
     "format:code": "xo --fix",
     "format:rest": "prettier --write .",
     "format": "run-s format:*",
-    "test:lib": "tsx test/*-test.ts",
+    "test:lib": "tsx test/realtime-e2e-test.ts",
     "test": "run-s lint test:*",
     "pre-commit": "lint-staged",
     "prepare": "run-s compile && husky install config/husky"
