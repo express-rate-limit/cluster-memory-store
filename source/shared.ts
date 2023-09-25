@@ -1,18 +1,25 @@
-import type { Store } from 'express-rate-limit'
+import type { IncrementResponse, Store } from 'express-rate-limit'
 
 export const from = 'cluster-memory-store'
 
 export type Command = keyof Omit<Store, 'prefix' | 'localKeys'>
 
-export type WorkerToPrimaryMessage = {
+type Message = {
+	from: 'cluster-memory-store'
+}
+
+export type WorkerToPrimaryMessage = Message & {
 	command: Command
 	args: any[]
 	requestId: number
 	prefix: string
-	from: 'cluster-memory-store'
 }
 
-export type PrimaryToWorkerMessage = {
+export type PrimaryToWorkerMessage = Message & {
 	requestId: number
-	result: any
+	result: unknown
+}
+
+export type SerializedIncrementResponse = IncrementResponse & {
+	resetTime: string
 }

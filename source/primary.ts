@@ -3,7 +3,11 @@
 
 import cluster, { type Worker } from 'node:cluster'
 import { MemoryStore, type Store } from 'express-rate-limit'
-import { type WorkerToPrimaryMessage, from } from './shared'
+import {
+	type WorkerToPrimaryMessage,
+	from,
+	type PrimaryToWorkerMessage,
+} from './shared.js'
 // Import type { Options } from './types'
 
 export class ClusterMemoryStorePrimary {
@@ -43,14 +47,18 @@ export class ClusterMemoryStorePrimary {
 			}
 
 			if (command in store && typeof store[command] === 'function') {
-				const result = await (
-					store[command] as (this: Store, ...[]) => Promise<any>
-				).apply(store, args)
-				worker.send({
+				const result: unknown =
+					await // eslint-disable-next-line no-empty-pattern
+					(store[command] as (this: Store, ...[]) => Promise<any>).apply(
+						store,
+						args,
+					)
+				const message: PrimaryToWorkerMessage = {
 					requestId,
 					result,
 					from,
-				})
+				}
+				worker.send(message)
 			} else {
 				console.error(
 					new Error(

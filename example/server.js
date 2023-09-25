@@ -38,7 +38,9 @@ if (cluster.isPrimary) {
 		}),
 	)
 
-	app.get('/', (request, res) => res.send(`hello from ${process.pid}`))
+	app.get('/', (request, response) =>
+		response.send(`hello from ${process.pid}`),
+	)
 
 	// Tip: run with PORT=0 to have the system automatically choose an avaliable port
 	const server = app.listen(process.env.PORT ?? 3000, () => {

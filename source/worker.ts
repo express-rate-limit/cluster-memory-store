@@ -14,7 +14,8 @@ import {
 	type PrimaryToWorkerMessage,
 	type WorkerToPrimaryMessage,
 	from,
-} from './shared'
+	type SerializedIncrementResponse,
+} from './shared.js'
 
 /**
  * A `Store` for the `express-rate-limit` package that communicates with the primary process to store and retrieve hits
@@ -29,6 +30,19 @@ export class ClusterMemoryStoreWorker implements Store {
 	 * Optional Unique Identifier
 	 */
 	prefix!: string
+
+	/**
+	 * Map of requestId to the data & calllback needed to finish handling a request without throwingany errors
+	 */
+	private readonly openRequests = new Map<
+		number,
+		{ timeoutId: NodeJS.Timeout; resolve: (value: unknown) => void }
+	>()
+
+	/**
+	 * Counter to generate reqiestIds, which are used to tie the response to the matching openRequest
+	 */
+	private currentRequestId = 0
 
 	/**
 	 * @constructor for `ClusterMemoryStore`.
@@ -77,7 +91,9 @@ export class ClusterMemoryStoreWorker implements Store {
 	 * @returns {IncrementResponse} - The number of hits and reset time for that client.
 	 */
 	async increment(key: string): Promise<IncrementResponse> {
-		const { totalHits, resetTime } = await this.send('increment', [key])
+		const { totalHits, resetTime } = (await this.send('increment', [
+			key,
+		])) as SerializedIncrementResponse
 		return {
 			totalHits,
 			resetTime: new Date(resetTime), // Date objects are serialized to strings for IPC
@@ -90,7 +106,7 @@ export class ClusterMemoryStoreWorker implements Store {
 	 * @param key {string} - The identifier for a client
 	 */
 	async decrement(key: string): Promise<void> {
-		return this.send('decrement', [key])
+		await this.send('decrement', [key])
 	}
 
 	/**
@@ -99,15 +115,8 @@ export class ClusterMemoryStoreWorker implements Store {
 	 * @param key {string} - The identifier for a client.
 	 */
 	async resetKey(key: string): Promise<void> {
-		return this.send('resetKey', [key])
+		await this.send('resetKey', [key])
 	}
-
-	private readonly openRequests = new Map<
-		number,
-		{ timeoutId: NodeJS.Timeout; resolve: (value: unknown) => void }
-	>()
-
-	private currentRequestId = 0
 
 	private async send(command: Command, args: any[]): Promise<any> {
 		return new Promise((resolve, reject) => {
@@ -119,6 +128,7 @@ export class ClusterMemoryStoreWorker implements Store {
 						`ClusterMemoryStoreWorker: no response recieved to ${command} command after ${timelimit}ms.`,
 					),
 				)
+				this.openRequests.delete(requestId)
 			}, timelimit)
 			this.openRequests.set(requestId, { timeoutId, resolve })
 			if (!process.send) {
@@ -167,6 +177,7 @@ export class ClusterMemoryStoreWorker implements Store {
 				const { timeoutId, resolve } = this.openRequests.get(
 					message_.requestId,
 				)!
+				this.openRequests.delete(message_.requestId)
 				clearTimeout(timeoutId)
 				resolve(message_.result)
 			} else {
