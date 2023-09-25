@@ -31,8 +31,9 @@ jobs:
         node-version: [lts/gallium, lts/*, latest]
         os: [ubuntu-latest, windows-latest, macos-latest]
         exclude:
-          # for some reason, this one always gets a 200 status when we expect a 429
-          - node-version: 18
+          # for some reason, node 18 on windows always gets a 200 status when we expect a 429
+          # maybe its so slow that the limit resets?
+          - node-version: lts/*
             os: windows-latest
     runs-on: ${{ matrix.os }}
     steps:
