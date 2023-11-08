@@ -24,6 +24,7 @@ if (cluster.isPrimary) {
 		console.log(
 			`worker ${worker.process.pid} died with code ${code} from signal ${signal}.`,
 		)
+		setTimeout(() => cluster.fork(), 1000) // Wait a second, then start a new worker
 	})
 } else {
 	// Worker
