@@ -54,6 +54,10 @@
     "pre-commit": "lint-staged",
     "prepare": "run-s compile && husky install config/husky"
   },
+  "dependencies": {
+    "@types/debug": "4.1.12",
+    "debug": "4.3.4"
+  },
   "devDependencies": {
     "@express-rate-limit/prettier": "1.1.0",
     "@express-rate-limit/tsconfig": "1.0.0",

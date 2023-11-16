@@ -8,6 +8,7 @@ import type {
 	Options as RateLimitConfiguration,
 	IncrementResponse,
 } from 'express-rate-limit'
+import createDebug from 'debug'
 import type { Options } from './types'
 import {
 	type Command,
@@ -16,6 +17,14 @@ import {
 	from,
 	type SerializedIncrementResponse,
 } from './shared.js'
+
+const debug = createDebug(
+	`cluster-memory-store:${
+		cluster.isWorker
+			? `worker:${cluster.worker?.id}`
+			: `not-a-worker:${process.pid}`
+	}`,
+)
 
 /**
  * A `Store` for the `express-rate-limit` package that communicates with the primary process to store and retrieve hits
@@ -50,6 +59,7 @@ export class ClusterMemoryStoreWorker implements Store {
 	 * @param options {Options} - The options used to configure the store's behaviour.
 	 */
 	constructor(options?: Partial<Options>) {
+		debug('Creating with options %o', options)
 		this.prefix = options?.prefix ?? 'default'
 		if (!cluster.isWorker) {
 			console.warn(
@@ -68,6 +78,7 @@ export class ClusterMemoryStoreWorker implements Store {
 	 * @impl
 	 */
 	async init(options: RateLimitConfiguration) {
+		debug('Initializing with options %o', options)
 		this.windowMs = options.windowMs
 		if (!cluster.worker) {
 			throw new Error(
@@ -119,6 +130,7 @@ export class ClusterMemoryStoreWorker implements Store {
 	}
 
 	private async send(command: Command, args: any[]): Promise<any> {
+		debug('Sending command %s with args %o', command, args)
 		return new Promise((resolve, reject) => {
 			const requestId = this.currentRequestId++
 			const timelimit = 1000
@@ -171,6 +183,7 @@ export class ClusterMemoryStoreWorker implements Store {
 	}
 
 	private onMessage(message: any) {
+		debug('Recieved message %o', message)
 		if (message?.from === from) {
 			const message_ = message as PrimaryToWorkerMessage
 			if (this.openRequests.has(message_.requestId)) {
