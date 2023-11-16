@@ -11,7 +11,7 @@ import {
 } from './shared.js'
 
 const debug = createDebug(
-	'cluster-memory-store:' + cluster.isPrimary ? 'primary' : 'not-primary',
+	'cluster-memory-store:' + (cluster.isPrimary ? 'primary' : 'not-primary'),
 )
 
 export class ClusterMemoryStorePrimary {
