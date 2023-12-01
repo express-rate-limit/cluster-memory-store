@@ -26,6 +26,10 @@ const debug = createDebug(
 	}`,
 )
 
+const errorPrefix = `ClusterMemoryStoreWorker:${
+	cluster.worker?.id ?? 'not-a-worker'
+}:`
+
 /**
  * A `Store` for the `express-rate-limit` package that communicates with the primary process to store and retrieve hits
  */
@@ -63,9 +67,7 @@ export class ClusterMemoryStoreWorker implements Store {
 		this.prefix = options?.prefix ?? 'default'
 		if (!cluster.isWorker) {
 			console.warn(
-				new Error(
-					'ClusterMemoryStoreWorker instance created in non-worker process',
-				),
+				new Error(errorPrefix + ' instance created in non-worker process'),
 			)
 		}
 	}
@@ -78,18 +80,18 @@ export class ClusterMemoryStoreWorker implements Store {
 	 * @impl
 	 */
 	async init(options: RateLimitConfiguration) {
-		debug('Initializing with options %o', options)
+		debug('Initializing with parent options %o', options)
 		this.windowMs = options.windowMs
 		if (!cluster.worker) {
 			throw new Error(
-				'ClusterMemoryStoreWorker: cluster.worker is undefined, unable to initialize',
+				`${errorPrefix} cluster.worker is undefined, unable to initialize`,
 			)
 		}
 
 		cluster.worker.on('message', this.onMessage.bind(this))
 		return this.send('init', [{ windowMs: this.windowMs }]).catch(
 			(error: any) => {
-				console.error('ClusterMemoryStoreWorker: failed to initialize', error)
+				console.error(`${errorPrefix} failed to initialize`, error)
 			},
 		)
 	}
@@ -137,7 +139,7 @@ export class ClusterMemoryStoreWorker implements Store {
 			const timeoutId = setTimeout(() => {
 				reject(
 					new Error(
-						`ClusterMemoryStoreWorker: no response recieved to ${command} command after ${timelimit}ms.`,
+						`${errorPrefix} no response recieved to ${command} command after ${timelimit}ms.`,
 					),
 				)
 				this.openRequests.delete(requestId)
@@ -146,7 +148,7 @@ export class ClusterMemoryStoreWorker implements Store {
 			if (!process.send) {
 				reject(
 					new Error(
-						'ClusterMemoryStoreWorker: process.send is undefined, indicating that this is probably not a node:cluster worker.',
+						`${errorPrefix} process.send is undefined, indicating that this is probably not a node:cluster worker.`,
 					),
 				)
 				return
@@ -175,7 +177,8 @@ export class ClusterMemoryStoreWorker implements Store {
 			if (!shouldSendMore) {
 				console.warn(
 					new Error(
-						'CluserMemoryStoreWorker: process.send() returned false indicating that the channel is closed and/or there is a large backlog of messages waiting to be sent.',
+						errorPrefix +
+							'  process.send() returned false indicating that the channel is closed and/or there is a large backlog of messages waiting to be sent.',
 					),
 				)
 			}
@@ -196,7 +199,7 @@ export class ClusterMemoryStoreWorker implements Store {
 			} else {
 				console.warn(
 					new Error(
-						'ClusterMemoryStoreWorker: response recieved without matching open request: ' +
+						`${errorPrefix} response recieved without matching open request: ` +
 							JSON.stringify(message_),
 					),
 				)
