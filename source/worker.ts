@@ -89,7 +89,7 @@ export class ClusterMemoryStoreWorker implements Store {
 		}
 
 		cluster.worker.on('message', this.onMessage.bind(this))
-		return this.send('init', [{ windowMs: this.windowMs }]).catch(
+		return this.send('init', [{ windowMs: this.windowMs }], 10 * 1000).catch(
 			(error: any) => {
 				console.error(`${errorPrefix} failed to initialize`, error)
 			},
@@ -131,11 +131,14 @@ export class ClusterMemoryStoreWorker implements Store {
 		await this.send('resetKey', [key])
 	}
 
-	private async send(command: Command, args: any[]): Promise<any> {
+	private async send(
+		command: Command,
+		args: any[],
+		timelimit = 1000,
+	): Promise<any> {
 		debug('Sending command %s with args %o', command, args)
 		return new Promise((resolve, reject) => {
 			const requestId = this.currentRequestId++
-			const timelimit = 1000
 			const timeoutId = setTimeout(() => {
 				reject(
 					new Error(
