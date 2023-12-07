@@ -65,6 +65,30 @@ When applying multiple rate limits (e.g. a global limit and a more strict limit
 for a specific endpoint), set this to a unique value on each to prevent
 double-counting of visits.
 
+## Usage with PM2, gatling, and other process managers
+
+Because this store requires code execution in the primary process, it doesn't
+work with process managers that need full control of the primary process,
+including PM2 when in `cluster` mode.
+
+### PM2
+
+To work with [PM2](https://pm2.keymetrics.io/), use the following configuration:
+
+    instances: 1,
+    exec_mode: 'fork',
+
+And then edit your main JS file to include the clustering code, similar to
+[this example](https://github.com/express-rate-limit/cluster-memory-store/blob/8745cb4da4035f84255e1c0146951a0fe2fbcc10/example/server.js).
+
+This looses some of the benefits of using PM2, because it can no longer directly
+manage worker processes.
+
+### Gatling
+
+[Gatling](https://www.npmjs.com/package/gatling) is not currently compatibile
+with `cluster-memory-store`.
+
 ## Issues and Contributing
 
 If you encounter a bug or want to see something added/changed, please go ahead
