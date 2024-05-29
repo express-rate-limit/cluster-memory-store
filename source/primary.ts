@@ -65,6 +65,7 @@ export class ClusterMemoryStorePrimary {
 					requestId,
 					result,
 					from,
+					prefix,
 				}
 				debug('Sending response to worker %d: %o', worker.id, message)
 				worker.send(message)

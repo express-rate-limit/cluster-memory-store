@@ -190,7 +190,7 @@ export class ClusterMemoryStoreWorker implements Store {
 
 	private onMessage(message: any) {
 		debug('Recieved message %o', message)
-		if (message?.from === from) {
+		if (message?.from === from && message?.prefix === this.prefix) {
 			const message_ = message as PrimaryToWorkerMessage
 			if (this.openRequests.has(message_.requestId)) {
 				const { timeoutId, resolve } = this.openRequests.get(
