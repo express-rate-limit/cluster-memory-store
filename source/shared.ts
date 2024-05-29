@@ -6,13 +6,13 @@ export type Command = keyof Omit<Store, 'prefix' | 'localKeys'>
 
 type Message = {
 	from: 'cluster-memory-store'
+	prefix: string
 }
 
 export type WorkerToPrimaryMessage = Message & {
 	command: Command
 	args: any[]
 	requestId: number
-	prefix: string
 }
 
 export type PrimaryToWorkerMessage = Message & {
