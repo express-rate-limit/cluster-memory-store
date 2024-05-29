@@ -1,6 +1,6 @@
 {
   "name": "@express-rate-limit/cluster-memory-store",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "description": "A memory store for the express-rate-limit middleware for use with node:cluster.",
   "author": "linyows",
   "license": "MIT",
