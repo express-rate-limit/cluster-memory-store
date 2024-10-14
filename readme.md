@@ -39,7 +39,7 @@ In each cluster worker:
 
 ```ts
 import { rateLimit } from 'express-rate-limit'
-import { ClusterMemoryStoreWorker } from 'cluster-memory-store'
+import { ClusterMemoryStoreWorker } from '@express-rate-limit/cluster-memory-store'
 
 const limiter = rateLimit({
 	store: new ClusterMemoryStoreWorker(),
