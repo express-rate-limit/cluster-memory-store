@@ -2,7 +2,10 @@
   "name": "@express-rate-limit/cluster-memory-store",
   "version": "0.3.1",
   "description": "A memory store for the express-rate-limit middleware for use with node:cluster.",
-  "author": "linyows",
+  "author": {
+    "name": "Nathan Friedly",
+    "url": "http://nfriedly.com/"
+  },
   "license": "MIT",
   "homepage": "https://github.com/express-rate-limit/cluster-memory-store",
   "repository": "express-rate-limit/cluster-memory-store",
